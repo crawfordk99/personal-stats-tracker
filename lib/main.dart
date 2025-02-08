@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:personal_stats_tracker/ShootingPercentage.dart';
+import 'package:personal_stats_tracker/shooting_percentage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -58,7 +58,7 @@ class _NumberInputScreenState extends State<_NumberInputScreen> {
   }
 
   // A basic form of saving data in dart, shared preferences can handle saving small bits of data
-  void _loadPercentage() async {
+  Future<void> _loadPercentage() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _shootingPercentage = prefs.getDouble('shooting_percentage') ?? 0;
@@ -67,7 +67,7 @@ class _NumberInputScreenState extends State<_NumberInputScreen> {
 
   /* This will connect the shooting percentage class. This helps keep the code cleaner,
   * and lets a different class other than main worry about the calculations*/
-  void _calculatePercentage() async {
+  Future<void> _calculatePercentage() async {
     final prefs = await SharedPreferences.getInstance();
     double result = 0.0;
     if (_fieldGoalsMade != null && _fieldGoalsAttempted != null) {
@@ -76,6 +76,7 @@ class _NumberInputScreenState extends State<_NumberInputScreen> {
       setState(() {
         _shootingPercentage = result;
       });
+      // _savePercentage(_shootingPercentage ?? 0);
     }
   }
 
@@ -84,7 +85,7 @@ class _NumberInputScreenState extends State<_NumberInputScreen> {
     // Builds every time set state is called
     return Scaffold(
       appBar: AppBar(
-        title: Text('Enter Shooting Stats'),
+        title: Text('Personal Stats Tracker'),
         backgroundColor: Colors.white60,
       ),
       body: Padding(
@@ -132,7 +133,7 @@ class _NumberInputScreenState extends State<_NumberInputScreen> {
               style: TextStyle(fontSize: 12, fontFamily: "Times New Roman"),
             ),
             Text(
-              _shootingPercentage != null ? 'Shooting Percentage: ${(_shootingPercentage! * 100).toStringAsFixed(2)}%' : '',
+              _shootingPercentage != null ? 'Shooting Percentage: ${((_shootingPercentage ?? 0) * 100).toStringAsFixed(2)}%' : '',
               style: TextStyle(fontSize: 20, fontFamily: "Arial", fontWeight: FontWeight.bold),
             )
           ],
@@ -140,4 +141,9 @@ class _NumberInputScreenState extends State<_NumberInputScreen> {
       ),
     );
   } // widget
+  // Future<void> _savePercentage(double percentage) async{
+  //   final prefs = await SharedPreferences.getInstance();
+  //   await prefs.setDouble('shooting_percentage', percentage);
+  // }
 } // NumberInputScreenState
+
