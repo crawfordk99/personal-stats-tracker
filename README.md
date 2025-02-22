@@ -15,7 +15,7 @@ user enters stats, it will rewrite the entry instead of making new entries (stil
 
 
 [Software Demo Video part 1](https://youtu.be/6tIJdPUmhKc)
-[Software Demo Video part 2]()
+[Software Demo Video part 2](https://youtu.be/nc6d-AjsOgA)
 
 # Development Environment
 

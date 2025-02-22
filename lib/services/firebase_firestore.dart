@@ -37,14 +37,12 @@ class FirebaseFirestoreService {
       // If an entry exists, update the latest one
       var docId = existingStats.docs.first.id;
       await statsCollection.doc(docId).update(stats);
-      print("Stats updated successfully!");
     } else {
       // If no entry exists, create a new one
       await statsCollection.add({
         "timestamp": FieldValue.serverTimestamp(),
         ...stats,
       });
-      print("Stats saved successfully!");
     }
 
   }
