@@ -8,6 +8,11 @@ class FirebaseAuthService {
     _auth.useAuthEmulator('localhost', 9099);
   }
 
+  // Expose the authStateChanges stream
+  Stream<User?> authStateChanges() {
+    return _auth.authStateChanges();
+  }
+
   Future<User?> signUp(String email, String password) async {
     try {
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
@@ -24,14 +29,14 @@ class FirebaseAuthService {
 
   Future<User?> logIn(String email, String password) async {
     try {
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: email,
           password: password
       );
       return userCredential.user;
     }
     catch (e) {
-      print("Sign up error: $e");
+      print("Log in error: $e");
       return null;
     }
   }

@@ -52,3 +52,6 @@ firebase-debug.log
 firestore-debug.log
 ui-debug.log
 auth-debug.log
+
+# Saved local data
+./emulator-data

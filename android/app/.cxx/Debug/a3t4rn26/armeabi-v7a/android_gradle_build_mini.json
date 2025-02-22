@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/Users/keithcrawfordjr/development/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/keithcrawfordjr/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/keithcrawfordjr/Winter 2025/CSE310/personal-projects/weather-app/PersonalStatsTracker/personal_stats_tracker/android/app/.cxx/Debug/a3t4rn26/armeabi-v7a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/keithcrawfordjr/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/keithcrawfordjr/Winter 2025/CSE310/personal-projects/weather-app/PersonalStatsTracker/personal_stats_tracker/android/app/.cxx/Debug/a3t4rn26/armeabi-v7a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}

@@ -2,22 +2,28 @@ import 'package:personal_stats_tracker/services/firebase_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:personal_stats_tracker/sports_stats.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:personal_stats_tracker/stats_notifier.dart';
 
-class SeeStats extends StatefulWidget {
+class SeeStats extends ConsumerStatefulWidget {
   const SeeStats({super.key});
 
   @override
   SeeStatsState createState() => SeeStatsState();
 }
 
-class SeeStatsState extends State<SeeStats> {
+class SeeStatsState extends ConsumerState<SeeStats> {
   final FirebaseFirestoreService _firestore = FirebaseFirestoreService();
 
-  String selectedSport = "basketball";
+
   
   @override
   Widget build(BuildContext context) {
-    List<SportsStats> stats = sportsStats[selectedSport] ?? [];
+
+    // Acts a listener for changes in selected sport
+    final statsNotifier = ref.watch(statsProvider);
+    List<SportsStats> stats = sportsStats[statsNotifier] ?? [];
+
     return Scaffold(
       appBar: AppBar(
         title: Text("User Stats Report"),
@@ -29,28 +35,30 @@ class SeeStatsState extends State<SeeStats> {
           mainAxisAlignment:  MainAxisAlignment.center,
           children: <Widget>[
             DropdownButton<String>(
-              value: selectedSport,
+              value: statsNotifier,
+              onChanged: (newSport) {
+                // reads change in selected sport, otherwise defaults to basketball
+                ref.read(statsProvider.notifier).changeSport(newSport ?? "Basketball");
+              },
+              // check the sportsStats dictionaries keys for the different sports options
               items: sportsStats.keys.map((String sport) {
                 return DropdownMenuItem<String>(
                   value: sport,
                   child: Text(sport),
                 );
               }).toList(),
-              onChanged: (newSport) {
-                setState(() {
-                  selectedSport = newSport ?? "Basketball";
-                });
-              },
             ),
             Expanded(
+                // Get user stats
                 child: StreamBuilder<QuerySnapshot>(
-                  stream: _firestore.getStatsStream(selectedSport),
+                  stream: _firestore.getStatsStream(statsNotifier),
                   builder: (context, snapshot) {
+                    // if snapshot doesn't have data, indicate with buffer circle
                     if (!snapshot.hasData) {
                     return Center(child: CircularProgressIndicator());
                     }
 
-
+                    // access the stats in the docs if data exists
                     var statsList = snapshot.data?.docs;
 
                     return ListView.builder(
@@ -58,10 +66,12 @@ class SeeStatsState extends State<SeeStats> {
                       itemBuilder: (context, index) {
 
                         var data = statsList?[index].data() as Map<String, dynamic>;
+                        var statId = statsList?[index].id;  // Get the document ID to allow for deletion
 
                         return Card(
                           margin: EdgeInsets.symmetric(vertical: 8.0),
                           child: ListTile(
+                            // Displays stats in order of time
                             title: Text("${data['timestamp']?.toDate()}"),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,18 +83,29 @@ class SeeStatsState extends State<SeeStats> {
                               }).toList(),
 
                             ),
+                            // This allows for button to accompany the entry of stats.
+                            trailing: IconButton(
+                              icon: Icon(Icons.delete),
+                              onPressed: () async {
+                                try {
+                                  // Pass the sport name, and the stat id to delete the specific stat entry
+                                  await _firestore.deleteUserStats(statsNotifier, statId);
+                                }
+                                catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text("Error deleting stat: $e"))
+                                      );
+                                }
+                              }
+                            ),
                           ),
+
                         );
+
                       },
                     );
                   },
                 ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/enterStats');
-              },
-              child: Text("Enter Stats"),
             ),
           ],
         ),
